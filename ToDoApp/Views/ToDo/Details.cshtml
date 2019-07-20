@@ -1,0 +1,67 @@
+﻿@using ToDoApp.Models
+@model TaskModel
+@{
+    ViewBag.Title = "Details";
+}
+
+
+@{
+    var session = Session["user"] as LoginModel;
+    if (session.IsAuthenticated)
+    {
+        <ul class="nav navbar-nav navbar-right">
+
+            <li>@Html.ActionLink("Log off", "LogOff", "Account", routeValues: null, htmlAttributes: new { id = "LogOffLink" })</li>
+        </ul>
+    }
+}
+<h2>Details</h2>
+
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.TaskName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TaskName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TaskDescription)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TaskDescription)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TaskStatus)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TaskStatus)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreationTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreationTime)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ModificationTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ModificationTime)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Back to List", "Dashboard", "Todo")
+</p>

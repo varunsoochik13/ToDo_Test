@@ -1,0 +1,151 @@
+﻿@using ToDoApp.Models
+@model IEnumerable<TaskModel>
+@{
+    ViewBag.Title = "Dashboard";
+}
+@{
+    var session = Session["user"] as LoginModel;
+    if (session.IsAuthenticated)
+    {
+        <ul class="nav navbar-nav navbar-right">
+
+            <li>@Html.ActionLink("Log off", "LogOff", "Account", routeValues: null, htmlAttributes: new { id = "LogOffLink" })</li>
+        </ul>
+    }
+}
+<h2>Dashboard</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create", "ToDo", new { @class = "btn btn-default btn-sm" }) |
+    <input type="button" id="btnShowCompleted" class="btn btn-default btn-sm" value="Show Completed" />
+</p>
+<script src="/Scripts/jquery-3.3.1.js"></script>
+
+
+<script>
+    $(document).ready(function () {
+        $('#tblCompleted').hide();
+        $('#lblTask').hide();
+        $('#btnShowCompleted').click(function () {
+            $('#tblCompleted').toggle(function changeButtonText() {
+               $("#btnShowCompleted").val($("#btnShowCompleted").val() === "Show Completed" ? "Hide Completed" : "Show Completed");
+            });
+            $('#lblTask').toggle();
+
+        })
+
+        $("input[type='checkbox']").change(function () {
+            $.ajax({
+                url: '@Url.Action("UpdateStatus","ToDo")',
+                type: 'POST',
+                data: {
+                    taskId: $('input[type=hidden]', $(this).closest("td")).val()
+                },
+                success: function () {
+                    location.reload(true);
+                }
+            });
+        });
+    });
+
+</script>
+<h3>In Progress Tasks</h3>
+<div id="first" class="container">
+    <div id="tblProgress" style="height: 200px; overflow: auto;">
+        <table class="table table-condensed table-striped table-hover">
+            <tr>
+                <th></th>
+                <th>
+                    Task Name
+                </th>
+                <th>
+                    Status
+                </th>
+                <th>
+                    Last Modification
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                if (item.TaskStatus.Equals("In Progress"))
+                {
+                    <tr>
+                        <td>
+                            @Html.HiddenFor(modelItem => item.TaskId)
+                            @Html.CheckBoxFor(modelItem => item.IsSelected)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TaskName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TaskStatus)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ModificationTime)
+                        </td>
+                        <td>
+                            @Html.ActionLink("Edit", "Edit", new { taskId = item.TaskId, userId = item.UserId }) |
+                            @Html.ActionLink("Details", "Details", new { taskId = item.TaskId, userId = item.UserId }) |
+                            @Html.ActionLink("Delete", "Delete", new { taskId = item.TaskId, userId = item.UserId })
+                        </td>
+                    </tr>
+                }
+
+            }
+
+        </table>
+    </div>
+</div>
+
+<br />
+
+<div class="container">
+
+    <label id="lblTask"><h3>Completed Tasks</h3></label>
+    <div id="tblCompleted" style="height: 200px; overflow: auto;">
+
+        <table class="table table-condensed table-striped table-hover">
+            <tr>
+                <th></th>
+                <th>
+                    Task Name
+                </th>
+                <th>
+                    Status
+                </th>
+                <th>
+                    Last Modification
+                </th>
+                <th></th>
+            </tr>
+            @foreach (var item in Model)
+            {
+                if (item.TaskStatus.Equals("Completed"))
+                {
+                    <tr>
+                        <td>
+                            @Html.HiddenFor(modelItem => item.TaskId)
+                            @Html.CheckBoxFor(modelItem => item.IsSelected)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TaskName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TaskStatus)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ModificationTime)
+                        </td>
+                        <td>
+                            @Html.ActionLink("Details", "Details", new { taskId = item.TaskId, userId = item.UserId }) |
+                            @Html.ActionLink("Delete", "Delete", new { taskId = item.TaskId, userId = item.UserId })
+                        </td>
+                    </tr>
+                }
+
+            }
+        </table>
+    </div>
+</div>
