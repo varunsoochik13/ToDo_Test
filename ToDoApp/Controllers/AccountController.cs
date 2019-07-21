@@ -22,48 +22,87 @@ namespace ToDoApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult VerifyLogin(LoginModel login)
         {
-          
-            var result = (from log in context.Login
+            try
+            {
+                
+                var result = (from log in context.Login
                               where log.username == login.Username && log.password == login.Password
                               select log).FirstOrDefault();
-            if (result != null)
-            {
-                Session["user"] = new LoginModel {UserId = result.Id , Username = result.username,IsAuthenticated =true};
-                return RedirectToAction("Dashboard", "ToDo");
+                if (result != null)
+                {
+                    Session["user"] = new LoginModel { UserId = result.Id, Username = result.username, IsAuthenticated = true };
+                    return RedirectToAction("Dashboard", "ToDo");
+                }
+                else {
+                    ViewBag.error = "Username or Password is Incorrect";
+                    return View("Error");
+                }
+                    
             }
-            else
-                return View("Login");
+            catch (System.Exception ex)
+            {
+                ViewBag.error = ex.Message;
+                return View("Error");
+            }
+
         }
 
         public ActionResult LogOff()
         {
-            Session["user"] = null;
-            Session.Abandon();
-            return RedirectToAction("Index", "Account");
+            try
+            {
+                Session["user"] = null;
+                Session.Abandon();
+                return RedirectToAction("Index", "Account");
+            }
+            catch (System.Exception ex)
+            {
+                ViewBag.error = ex.Message;
+                return View("Error");
+            }
+
         }
 
         public ActionResult Register()
         {
-            return View("Register");
+            try
+            {
+                return View("Register");
+            }
+            catch (System.Exception ex)
+            {
+                ViewBag.error = ex.Message;
+                return View("Error");
+            }
+         
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Register(LoginModel model)
         {
-            var input = new Login()
+            try
             {
-                username = model.Username,
-                password = model.Password
-            };
+                var input = new Login()
+                {
+                    username = model.Username,
+                    password = model.Password
+                };
 
-            context.Login.Add(input);
-            var result = context.SaveChanges();
-            if(result == 1)
-            {
-                return RedirectToAction("Index", "Account");
+                context.Login.Add(input);
+                var result = context.SaveChanges();
+                if (result == 1)
+                {
+                    return RedirectToAction("Index", "Account");
+                }
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            catch (System.Exception ex)
+            {
+                ViewBag.error = ex.Message;
+                return View("Error");
+            }
+
         }
     }
 }
